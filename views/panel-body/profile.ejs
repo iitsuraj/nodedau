@@ -1,0 +1,14 @@
+<% layout('panel') -%>
+<form method="POST">
+        <% include ../partials/panel/profile/basic-info %>
+
+        <% if (userType === 'doctor') {%>
+        
+            <% include ../partials/panel/profile/curriculum %> 
+            <% include ../partials/panel/profile/pricing %> 
+
+        <%}%>
+        <p><button class="btn_1 medium" type="submit">Save</button></p>
+
+</form>
+</div>

@@ -1,0 +1,60 @@
+		<% layout('layout') -%>
+		<% var bookmarks = user.bookmark%>
+        <div class="bg_color_1">
+			<div class="container margin_120_95">
+				<div class="main_title">
+					<h2> Viewed doctors</h2>
+					<p>Usu habeo equidem sanctus no. Suas summo id sed, erat erant oporteat cu pri.</p>
+				</div>
+				<div class="alert alert-success" id="success-alert" style="display:none">
+						<p id="msg"></p>
+				</div>
+				<div class="row">
+
+				<% for(var i=0; i<doctors.length; i++) {%>
+					<div class="col-lg-4 col-md-6">
+						<div class="box_list home">
+							<!-- <form method="post" action="/bookmarks">
+								<input class="form-control" type="hidden" name="doctor_id" value="<%= doctors[i]._id%>">
+								<a href="#0" data-toggle="tooltip" data-placement="top" title="Add to wishlist" class="wish_bt"><button type="submit"></button></a>
+							</form> -->
+							<% if(user.bookmark.length>0) {%>
+								<% for(var z=0; z<user.bookmark.length; z++) {%>
+										<!-- <h1><%= bookmarks.length%></h1> -->
+										<%var bi = "'"+doctors[i]._id+"'"%>
+										<%var bd = "'"+user.bookmark[z].doctor+"'"%>
+										<% if(bi === bd){%>
+											<a href="#0" data-toggle="tooltip" data-placement="top" title="Add to wishlist" class="wish_bt bookmarked" ></a>
+											<% } else { %>
+												<a href="#0" data-toggle="tooltip" data-placement="top" title="Add to wishlist" class="wish_bt bookmark-add"><input type="hidden" class="doctor_id" name="doctor_id" value="<%= doctors[i]._id%>"></a>
+												<%}%>								<%}%>
+								
+								<% } else { %>
+									<a href="#0" data-toggle="tooltip" data-placement="top" title="Add to wishlist" class="wish_bt bookmark-add"><input type="hidden" class="doctor_id" name="doctor_id" value="<%= doctors[i]._id%>"></a>
+									<%}%>
+
+							<figure>
+
+								<a href="detail-page.html"><img src="http://via.placeholder.com/565x565.jpg" class="img-fluid" alt=""></a>
+								<div class="preview"><span>Read more</span></div>
+							</figure>
+							<div class="wrapper">
+								<small><%= doctors[i].category.name%></small>
+								<h3><%=doctors[i].profile.name%></h3>
+								<p>Id placerat tacimates definitionem sea, prima quidam vim no. Duo nobis persecuti cuodo....</p>
+								<span class="rating"><i class="icon_star voted"></i><i class="icon_star voted"></i><i class="icon_star voted"></i><i class="icon_star"></i><i class="icon_star"></i> <small>(145)</small></span>
+								<a href="#0" data-toggle="tooltip" data-placement="top" data-original-title="Badge Level" class="badge_list_1"><img src="/img/badges/badge_1.svg" width="15" height="15" alt=""></a>
+							</div>
+							<ul>
+								<li><i class="icon-eye-7"></i> 854 Views</li>
+								<li><a href="/doctor/<%= doctors[i]._id%>">Book now</a></li>
+							</ul>
+						</div>
+					</div>
+					<%}%>
+				</div>
+				<!-- /row -->
+				<p class="text-center add_top_30"><a href="list.html" class="btn_1 medium">View all Doctors</a></p>
+			</div>
+			<!-- /container -->
+		</div>

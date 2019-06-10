@@ -1,0 +1,32 @@
+<% layout('panel') -%>
+<div class="alert alert-success" id="success-alert" style="display:none">
+        <p id="msg"></p>
+</div>
+<div class="box_general">
+        <div class="header_box">
+            <h2 class="d-inline-block">Bookmarks List</h2>
+            <div class="filter">
+                <select name="orderby" class="selectbox">
+                    <option value="Any time">Any time</option>
+                    <option value="Latest">Latest</option>
+                    <option value="Oldest">Oldest</option>
+                </select>
+            </div>
+        </div>
+        <div class="list_general">
+            <ul>
+                <% for (var i =0; i< user.bookmark.length; i++) {%>
+                <li>
+                    <figure><img src="/panel/img/avatar1.jpg" alt=""></figure>
+                    <small><%= user.bookmark[i].doctor.category.name%></small>
+                    <h4><%= user.bookmark[i].doctor.profile.name%></h4>
+                    <p><%= user.bookmark[i].doctor.profile.addresh%><br></p>
+                    <p><a href="/doctor/<%= user.bookmark[i].doctor._id%>" class="btn_1 gray"><i class="fa fa-fw fa-user"></i> View profile</a></p>
+                    <ul class="buttons">
+                        <li><a href="#0"  class="btn_1 gray delete wishlist_close bookmark-remove"><i class="fa fa-fw fa-times-circle-o"></i><input type="hidden" class="bookmark_id" value="<%= user.bookmark[i]._id%>"> Cancel</a></li>
+                    </ul>
+                </li>
+                <%}%>
+            </ul>
+        </div>
+    </div>

@@ -1,0 +1,32 @@
+		<div class="box_general">
+			<div class="header_box">
+				<h2 class="d-inline-block">Bookings List</h2>
+			</div>
+			<div class="list_general">
+				<ul>
+					<% if (user.booking.length > 0) {%>
+					<% for(var i=0; i < user.booking.length; i++) {%>
+						<% var today= user.booking[i].date;var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();%> 		
+
+					<li>
+						<figure><img src="/panel/img/avatar1.jpg" alt=""></figure>
+						<h4><%= user.booking[i].patient.profile.name%><i class="pending">Pending</i></h4>
+						<ul class="booking_details">
+							<li><strong>Booking date</strong><%= date%></li>
+							<li><strong>Booking time</strong><%= time%></li>
+							<li><strong>Visits</strong> Cardiology test, Diabetic diagnose</li>
+							<li><strong>Telephone</strong> <%= user.booking[i].patient.telephone%></li>
+							<li><strong>Email</strong> <%= user.booking[i].patient.email%></li>
+						</ul>
+						<ul class="buttons">
+							<li><a href="#0" class="btn_1 gray approve"><i class="fa fa-fw fa-check-circle-o"></i> Approve</a></li>
+							<li><a href="#0" class="btn_1 gray delete"><i class="fa fa-fw fa-times-circle-o"></i> Cancel</a></li>
+						</ul>
+					</li>
+					<%}%>
+					<% } else {%>
+						<h1>you dont have any bookings</h1>
+					<%}%>
+				</ul>
+       
+      </div>
