@@ -2,6 +2,7 @@ var router = require('express').Router();
 var Doctor = require('../models/doctor');
 var User = require('../models/user');
 var passportConf = require('../config/passport');
+var mongoose = require('mongoose');
 
 router.get('/home', function(req,res,next){
     res.render('panel-body/dashboard', { title: 'home', user: req.user });
