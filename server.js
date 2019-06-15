@@ -12,6 +12,7 @@ var engine = require('ejs-mate');
 
 var secret = require('./config/database');
 var Category = require('./models/category');
+var passportConf = require('./config/passport');
 
 var app = express();
 
@@ -72,12 +73,14 @@ app.use('/admin', adminRouter);
 var mainRouter = require('./routes/main');
 app.use('/', mainRouter);
 
-var ajaxRoute = require('./routes/ajax');
+var ajaxRoute = require('./routes/ajax-filter');
 app.use('/ajax/api', ajaxRoute)
-
+var panelRoute = require('./routes/panel');
+app.use('/panel',passportConf.isAuthenticated, panelRoute);
 app.get('*', function(req, res){
   res.send('Page Not found 404');
 
-})
+});
+
 
 app.listen(secret.port, () => console.log(`app listening on port: `+secret.port))

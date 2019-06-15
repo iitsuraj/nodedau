@@ -1,32 +1,47 @@
 var router = require('express').Router();
 var Doctor = require('../models/doctor');
 var User = require('../models/user');
+var async = require("async");
 var passportConf = require('../config/passport');
 var mongoose = require('mongoose');
+var Category = require('../models/category');
 
-router.get('/home', function(req,res,next){
-    res.render('panel-body/dashboard', { title: 'home', user: req.user });
-});
-router.get('/booking',passportConf.isAuthenticated, function(req,res,next){
-    var userPrototype = Object.getPrototypeOf(req.user);
-    if (userPrototype === Doctor.prototype){
-        Doctor.findById({_id: req.user._id}).populate('booking.patient').exec(function(err, doctor){
-            if(err) next(err);
-            res.render('panel-body/booking', { title: 'home', user: doctor });
-        });
-    } else if (userPrototype===User.prototype){
-        res.send('you not have access to view this page')
-    }
+
+
+router.post('/search', function(req,res,next){
+    Category.find({ "name": { "$regex": req.body.search_term, "$options": "i" } }, function(err, data){
+        if (err) return next(err);
+        res.send(data);
+        // console.log(data);
     });
-router.get('/category', function(req,res,next){
-    res.render('main/category', { title: 'home', user: req.user });
+    console.log(req.body)
 });
+
+router.get('/search', function(req,res,next){
+    res.render('main/search', {title: 'search'})
+});
+
+
+
+router.get('/category', function(req,res,next){
+    res.render('main/category', { title: 'home', userType : 'doctor' });
+});
+
+
+// router.get('/doctors/:id',passportConf.isAuthenticated, function(req,res,next){
+//     Doctor.find({category:req.params.id})
+//     .populate("category")
+//     .exec(function(err, doctors){
+//         if (err) return next (err);
+//         res.render('main/doctors', {doctors: doctors, title:'doctors'})
+//     })
+// });
 router.get('/doctors/:id',passportConf.isAuthenticated, function(req,res,next){
     Doctor.find({category:req.params.id})
     .populate("category")
     .exec(function(err, doctors){
         if (err) return next (err);
-        res.render('main/doctors', {doctors: doctors, title:'doctors', user: req.user})
+        res.render('main/list', {doctors: doctors, title:'doctors'});
     })
 });
 // router.post('/doctors/:id',passportConf.isAuthenticated, function(req,res,next){
@@ -43,6 +58,55 @@ router.get('/doctors/:id',passportConf.isAuthenticated, function(req,res,next){
 //         });
 //     });
 // });
+    
+    router.post("/doctor/:id", function(req, res, next) {
+        var today =new Date;
+        var valid = mongoose.Types.ObjectId.isValid(req.params.id);
+        var userPrototype = Object.getPrototypeOf(req.user);
+
+        if (valid) {
+            if (userPrototype === User.prototype){
+                async.waterfall([
+                    function(callback){
+                      Doctor.findById({_id: req.params.id}, function(err, doctor){
+                          if(err) next(err);
+                          doctor.booking.push({
+                              date: today,
+                              visitdate: req.body.calendar,
+                              slote:req.body.radio_time,
+                              patient: req.user._id
+                          });
+                          doctor.save(function(err, doctor){
+                              if(err) return next(err);
+                              callback(null, doctor);
+                          });
+          
+                      });
+                    },
+                    function(doctor){
+                      User.findById({_id: req.user._id}, function(err, user){
+                          user.booking.push({
+                              date: today,
+                              visitdate: req.body.calendar,
+                              slote:req.body.radio_time,
+                              doctor: doctor._id
+                          });
+                          user.save(function(err,user){
+                              if(err) return next(err);
+                              res.send(user);
+                          });
+                      });
+                    }
+                  ]);
+            } else if(userPrototype === Doctor.prototype){
+                res.send('please use your user id')
+            }
+        } else {
+            res.send('please use a valid id')
+        }
+
+      });
+
 router.get('/doctor/:id', passportConf.isAuthenticated,function(req,res,next){
     var valid = mongoose.Types.ObjectId.isValid(req.params.id);
     if (valid) {
@@ -55,12 +119,7 @@ router.get('/doctor/:id', passportConf.isAuthenticated,function(req,res,next){
                     res.render('main/doctor', {
                             doctor: doctor, title: 'doctor'
                         })
-                }
-                // res.render('main/doctor', {
-                //     doctor: doctor, title: 'doctor'
-                // })
-                // console.log(doctor); 
-               
+                }               
             }
         ) 
     } else {
@@ -68,71 +127,33 @@ router.get('/doctor/:id', passportConf.isAuthenticated,function(req,res,next){
     }
     
 });
-router.get('/bookmarks', function(req,res,next){
-    var userPrototype =  Object.getPrototypeOf(req.user);
-    if (userPrototype === Doctor.prototype){
-        Doctor.findById({_id: req.user._id}).populate({path:'bookmark.doctor',populate: { path: 'category' }}).exec(function(err, user){
-            if (err) return next(err);
-            res.render('panel-body/bookmarks', {user: user});
+router.get('/set', function(req,res,next){
+    Doctor.findById({_id: '5cff4cd83cd0c33c0c979097'}, function(err,doctor){
+        if(err) return next(err);
+        doctor.address.geolocation.type = 'Point',
+        doctor.address.geolocation.coordinates.push( 28.693709, 75.148662);
+        doctor.save(function(err, doctor){
+            if(err) next (err);
+            res.send(doctor);
         });
-    } else if (userPrototype===User.prototype){
-        User.findById(req.user._id).populate({path:'bookmark.doctor',populate: { path: 'category' }}).exec(function(err, user){
-            if (err) return next(err);
-            res.render('panel-body/bookmarks', {user: user});
-            // console.log(user.bookmark[0].doctor);
-        });
-    }
-});
-router.post('/bookmarks',passportConf.isAuthenticated, function(req,res,next){
-    var userPrototype =  Object.getPrototypeOf(req.user);
-if (userPrototype === Doctor.prototype){
-    Doctor.findById(req.user._id, function(err, user){
-        if (err) next (err);
-        var today = new Date();
-        user.bookmark.push({
-            doctor: req.body.doctor_id,
-            date: today
-        });
-        user.save(function(err){
-            if (err) next (err);
-            return res.status(200).send('bookmarkAdded');
-        });
+
     });
-} else if (userPrototype===User.prototype){
-    User.findById(req.user._id, function(err, user){
-        if (err) next (err);
-        var today = new Date();
-        user.bookmark.push({
-            doctor: req.body.doctor_id,
-            date: today
-        });
-        user.save(function(err){
-            if (err) next (err);
-            return res.status(200).send('bookmarkAdded');
-        });
-    });
-}
 });
-router.post('/bookmark-remove', function(req,res,next){
-    var userPrototype = Object.getPrototypeOf(req.user);
-    if (userPrototype === Doctor.prototype){
-        Doctor.findById(req.user._id, function(err, user){
-            if (err) next (err);
-            user.bookmark.pull(String(req.body.bookmark_id));
-            user.save(function(err){
-                if (err) next (err);
-                return res.status(200).send("removed");
-            });
-        });
-    } else if (userPrototype===User.prototype){
-        User.findById(req.user._id, function(err, user){
-            if (err) next (err);
-            user.bookmark.pull(String(req.body.bookmark_id));
-            user.save(function(err){
-                if (err) next (err);
-                return res.status(200).send("removed");
-            });
-        });
-    }
+router.get('/set/test', function(req,res,err){
+    Doctor.find({
+        geolocation: {
+         $near: {
+          $maxDistance: 1000,
+          $geometry: {
+           type: "Point",
+           coordinates: [28.173358, 75.516809]
+          }
+         }
+        }
+       }).find((error, results) => {
+        if (error) console.log(error);
+        console.log(JSON.stringify(results, 0, 2));
+        res.send(JSON.stringify(results, 0, 2));
+       });
 });
 module.exports= router;

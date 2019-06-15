@@ -5,7 +5,7 @@
               <div class="card-body-icon">
                 <i class="fa fa-fw fa-star"></i>
               </div>
-				<div class="mr-5"><h5>11 My Reviews!</h5></div>
+				<div class="mr-5"><h5><%=user.rating.length%> My Reviews!</h5></div>
             </div>
             <a class="card-footer text-white clearfix small z-1" href="reviews.html">
               <span class="float-left">View Details</span>
@@ -21,9 +21,9 @@
               <div class="card-body-icon">
                 <i class="fa fa-fw fa-calendar-check-o"></i>
               </div>
-              <div class="mr-5"><h5>10 My Bookings!</h5></div>
+              <div class="mr-5"><h5><%=user.booking.length%> My Bookings!</h5></div>
             </div>
-            <a class="card-footer text-white clearfix small z-1" href="bookings.html">
+            <a class="card-footer text-white clearfix small z-1" href="bookings">
               <span class="float-left">View Details</span>
               <span class="float-right">
                 <i class="fa fa-angle-right"></i>
@@ -37,9 +37,9 @@
               <div class="card-body-icon">
                 <i class="fa fa-fw fa-heart"></i>
               </div>
-              <div class="mr-5"><h5>10 My Bookmarks!</h5></div>
+              <div class="mr-5"><h5><%=user.bookmark.length%> My Bookmarks!</h5></div>
             </div>
-            <a class="card-footer text-white clearfix small z-1" href="bookmarks.html">
+            <a class="card-footer text-white clearfix small z-1" href="bookmarks">
               <span class="float-left">View Details</span>
               <span class="float-right">
                 <i class="fa fa-angle-right"></i>

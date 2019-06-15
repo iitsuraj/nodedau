@@ -1,0 +1,378 @@
+<% layout('layout') -%>
+<main class="theia-exception">
+	<div id="results">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-6">
+					<h4><strong>Showing 10</strong> of 140 results</h4>
+				</div>
+				<div class="col-md-6">
+					<div class="search_bar_list">
+						<input type="text" class="form-control" placeholder="Ex. Specialist, Name, Doctor...">
+						<input type="submit" value="Search">
+					</div>
+				</div>
+			</div>
+			<!-- /row -->
+		</div>
+		<!-- /container -->
+	</div>
+	<!-- /results -->
+
+	<div class="filters_listing">
+		<div class="container">
+			<ul class="clearfix">
+				<li>
+					<h6>Type</h6>
+					<div class="switch-field">
+						<input type="radio" id="all" name="type_patient" value="all" checked>
+						<label for="all">All</label>
+						<input type="radio" id="doctors" name="type_patient" value="doctors">
+						<label for="doctors">Doctors</label>
+						<input type="radio" id="clinics" name="type_patient" value="clinics">
+						<label for="clinics">Clinics</label>
+					</div>
+				</li>
+				<li>
+					<h6>Layout</h6>
+					<div class="layout_view">
+						<a href="grid-list.html"><i class="icon-th"></i></a>
+						<a href="#0" class="active"><i class="icon-th-list"></i></a>
+						<a href="list-map.html"><i class="icon-map-1"></i></a>
+					</div>
+				</li>
+				<li>
+					<h6>Sort by</h6>
+					<select name="orderby" class="selectbox">
+						<option value="Closest">Closest</option>
+						<option value="Best rated">Best rated</option>
+						<option value="Men">Men</option>
+						<option value="Women">Women</option>
+					</select>
+				</li>
+			</ul>
+		</div>
+		<!-- /container -->
+	</div>
+	<!-- /filters -->
+
+	<div class="container margin_60_35">
+		<div class="row">
+			<div class="col-lg-7">
+				<% for(var i=0; i<doctors.length; i++) {%>
+				<div class="strip_list wow fadeIn test-<%=i%>">
+					<a href="#0" data-toggle="tooltip" data-placement="top" title="Add to wishlist"
+						class="wish_bt bookmark-add"><input type="hidden" class="doctor_id" name="doctor_id"
+							value="<%= doctors[i]._id%>"></a>
+					<figure>
+						<a href="/doctor/<%= doctors[i]._id%>"><img src="http://via.placeholder.com/565x565.jpg"
+								alt=""></a>
+					</figure>
+					<small><%= doctors[i].category.name%></small>
+					<h3><%=doctors[i].profile.name%></h3>
+					<p>Id placerat tacimates definitionem sea, prima quidam vim no. Duo nobis persecuti cuodo....</p>
+					<span class="rating"><i class="icon_star voted"></i><i class="icon_star voted"></i><i
+							class="icon_star voted"></i><i class="icon_star"></i><i class="icon_star"></i>
+						<small>(145)</small></span>
+					<a href="badges.html" data-toggle="tooltip" data-placement="top" data-original-title="Badge Level"
+						class="badge_list_1"><img src="img/badges/badge_1.svg" width="15" height="15" alt=""></a>
+					<ul>
+						<li><a href="#0" onclick="onHtmlClick('Doctors', <%=i%>)" class="btn_listing">View on Map</a>
+						</li>
+						<li><a href="https://www.google.com/maps?saddr&daddr=<%=doctors[i].geolocation.coordinates[0]%>,<%=doctors[i].geolocation.coordinates[1]%>"
+								target="_blank">Directions</a></li>
+						<li><a href="/doctor/<%= doctors[i]._id%>">Book now</a></li>
+					</ul>
+				</div>
+				<%}%>
+                <!-- /strip_list -->
+                <nav aria-label="" class="add_top_20">
+                    <ul class="pagination pagination-sm">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">Previous</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+                <!-- /pagination -->
+            </div>
+            <!-- /col -->
+
+            <aside class="col-lg-5" id="sidebar">
+                <div id="map_listing" class="normal_list">
+                </div>
+            </aside>
+            <!-- /aside -->
+
+        </div>
+        <!-- /row -->
+    </div>
+    <!-- /container -->
+</main>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js"></script>
+<script>
+
+		var doctor = <%- JSON.stringify(doctors) %>;
+		var bookmark = <%- JSON.stringify(user.bookmark) %>;
+		var testArray = [];
+		// user location
+		var userCoordinates;
+		$.ajax({
+			method: 'GET',
+			url: 'http://ip-api.com/json',
+			dataType: 'json',
+			async: false,
+			success: function(json){
+				userCoordinates = json
+			},
+			error: function(error){
+				console.log(err);
+			}
+		});
+		for (var i = 0; i < doctor.length; i++) {
+			if (bookmark.length > 0) {
+				for (var j = 0; j < bookmark.length; j++) {
+					if (doctor[i]._id === bookmark[j].doctor) {
+						$(".test-" + i + " a.wish_bt").addClass("bookmarked").removeClass("bookmark-add").empty().attr('data-original-title', 'Bookmarked');
+						console.log(i)
+					}
+				}
+			}
+		};
+
+		var mapObject, markers = [], doctorInfo=[];
+		for (let i = 0; i < doctor.length; i++) {
+			doctorInfo.push({
+				name: doctor[i].profile.name,
+				location_latitude: doctor[i].geolocation.coordinates[0], 
+				location_longitude: doctor[i].geolocation.coordinates[1],
+				map_image_url: '/img/doctor_listing_1.jpg',
+				type: 'Psicologist - Pediatrician',
+				url_detail: '/doctor/'+ doctor[i]._id,
+				name_point: doctor[i].profile.name,
+				description_point: doctor[i].address.address,
+				get_directions_start_address: '',
+				phone: doctor[i].profile.telephone
+			})
+		}
+		var markersData = {
+			'Doctors' : doctorInfo
+		};
+		var mapOptions = {
+	zoom: 10,
+	center: new google.maps.LatLng(userCoordinates.lat, userCoordinates.lon),
+	mapTypeId: google.maps.MapTypeId.ROADMAP,
+
+	mapTypeControl: false,
+	mapTypeControlOptions: {
+		style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+		position: google.maps.ControlPosition.LEFT_CENTER
+	},
+	panControl: false,
+	panControlOptions: {
+		position: google.maps.ControlPosition.TOP_RIGHT
+	},
+	zoomControl: true,
+	zoomControlOptions: {
+		style: google.maps.ZoomControlStyle.LARGE,
+		position: google.maps.ControlPosition.RIGHT_BOTTOM
+	},
+	scrollwheel: false,
+	scaleControl: false,
+	scaleControlOptions: {
+		position: google.maps.ControlPosition.LEFT_CENTER
+	},
+	streetViewControl: true,
+	streetViewControlOptions: {
+		position: google.maps.ControlPosition.RIGHT_BOTTOM
+	},
+	styles: [
+		{
+			"featureType": "landscape",
+			"stylers": [
+				{
+					"hue": "#FFBB00"
+				},
+				{
+					"saturation": 43.400000000000006
+				},
+				{
+					"lightness": 37.599999999999994
+				},
+				{
+					"gamma": 1
+				}
+			]
+		},
+		{
+			"featureType": "road.highway",
+			"stylers": [
+				{
+					"hue": "#FFC200"
+				},
+				{
+					"saturation": -61.8
+				},
+				{
+					"lightness": 45.599999999999994
+				},
+				{
+					"gamma": 1
+				}
+			]
+		},
+		{
+			"featureType": "road.arterial",
+			"stylers": [
+				{
+					"hue": "#FF0300"
+				},
+				{
+					"saturation": -100
+				},
+				{
+					"lightness": 51.19999999999999
+				},
+				{
+					"gamma": 1
+				}
+			]
+		},
+		{
+			"featureType": "road.local",
+			"stylers": [
+				{
+					"hue": "#FF0300"
+				},
+				{
+					"saturation": -100
+				},
+				{
+					"lightness": 52
+				},
+				{
+					"gamma": 1
+				}
+			]
+		},
+		{
+			"featureType": "water",
+			"stylers": [
+				{
+					"hue": "#0078FF"
+				},
+				{
+					"saturation": -13.200000000000003
+				},
+				{
+					"lightness": 2.4000000000000057
+				},
+				{
+					"gamma": 1
+				}
+			]
+		},
+		{
+			"featureType": "poi",
+			"stylers": [
+				{
+					"hue": "#00FF6A"
+				},
+				{
+					"saturation": -1.0989010989011234
+				},
+				{
+					"lightness": 11.200000000000017
+				},
+				{
+					"gamma": 1
+				}
+			]
+		}
+	]
+};
+var marker;
+		mapObject = new google.maps.Map(document.getElementById('map_listing'), mapOptions);
+for (var key in markersData)
+	markersData[key].forEach(function (item) {
+		marker = new google.maps.Marker({
+			position: new google.maps.LatLng(item.location_latitude, item.location_longitude),
+			map: mapObject,
+			icon: '/img/pins/' + key + '.png',
+		});
+
+		if ('undefined' === typeof markers[key])
+			markers[key] = [];
+		console.log(key)
+		markers[key].push(marker);
+		console.log(marker[key])
+		google.maps.event.addListener(marker, 'click', (function () {
+			closeInfoBox();
+			getInfoBox(item).open(mapObject, this);
+			mapObject.setCenter(new google.maps.LatLng(item.location_latitude, item.location_longitude));
+		}));
+
+
+	});				
+
+		function hideAllMarkers () {
+			for (var key in markers)
+				markers[key].forEach(function (marker) {
+					marker.setMap(null);
+				});
+		};
+		
+		function toggleMarkers (category) {
+			hideAllMarkers();
+			closeInfoBox();
+
+			if ('undefined' === typeof markers[category])
+				return false;
+			markers[category].forEach(function (marker) {
+				marker.setMap(mapObject);
+				marker.setAnimation(google.maps.Animation.DROP);
+
+			});
+		};
+
+		function closeInfoBox() {
+			$('div.infoBox').remove();
+		};
+
+
+		
+		function getInfoBox(item) {
+			return new InfoBox({
+				content:
+				'<div class="marker_info">' +
+				'<figure><a href='+ item.url_detail +'><img src="' + item.map_image_url + '" alt="Image"></a></figure>' +
+				'<small>'+ item.type +'</small>' +
+				'<h3><a href='+ item.url_detail +'>'+ item.name_point +'</a></h3>' +
+				'<span>'+ item.description_point +'</span>' +
+				'<div class="marker_tools">' +
+				'<form action="http://maps.google.com/maps" method="get" target="_blank" style="display:inline-block""><input name="saddr" value="'+ item.get_directions_start_address +'" type="hidden"><input type="hidden" name="daddr" value="'+ item.location_latitude +',' +item.location_longitude +'"><button type="submit" value="Get directions" class="btn_infobox_get_directions">Directions</button></form>' +
+					'<a href="tel://'+ item.phone +'" class="btn_infobox_phone">'+ item.phone +'</a>' +
+					'</div>' +
+				'</div>',
+				disableAutoPan: false,
+				maxWidth: 0,
+				pixelOffset: new google.maps.Size(10, 105),
+				closeBoxMargin: '',
+				closeBoxURL: "/img/close_infobox.png",
+				isHidden: false,
+				alignBottom: true,
+				pane: 'floatPane',
+				enableEventPropagation: true
+			});
+		};
+		function onHtmlClick(location_type, key){
+     		google.maps.event.trigger(markers[location_type][key], "click");
+		}
+
+</script>
+<script src="/js/infobox.js"></script>

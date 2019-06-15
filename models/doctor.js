@@ -19,8 +19,11 @@ var DoctorSchema = new Schema({
         address: String,
         state: String,
         zipcode: String,
-        ip: [],
+        ip: []
     },
+    geolocation: {
+        type: { type: String, default:'Point' }, coordinates: [Number]
+       },
     curriculm:{
         professionalstatement: String,
         specialization:[{
@@ -34,7 +37,7 @@ var DoctorSchema = new Schema({
     booking:[{
         date: Date,
         visitdate: Date,
-        visitdate: String,
+        slote: String,
         msg: String,
         patient: {type: Schema.Types.ObjectId, ref: 'User'}
     }],
@@ -95,4 +98,5 @@ DoctorSchema.pre('save', function(next) {
 DoctorSchema.methods.comparePassword = function(password){
     return bcrypt.compareSync(password, this.password);
 };
+DoctorSchema.index({geolocation: "2dsphere" });
 module.exports = mongoose.model('Doctor', DoctorSchema);

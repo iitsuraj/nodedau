@@ -1,5 +1,5 @@
 		<% layout('layout') -%>
-		<% var bookmarks = user.bookmark%>
+		<% var bookmark = user.bookmark%>
         <div class="bg_color_1">
 			<div class="container margin_120_95">
 				<div class="main_title">
@@ -9,32 +9,13 @@
 				<div class="alert alert-success" id="success-alert" style="display:none">
 						<p id="msg"></p>
 				</div>
-				<div class="row">
+				<div class="row" id="doctors">
 
 				<% for(var i=0; i<doctors.length; i++) {%>
-					<div class="col-lg-4 col-md-6">
+					<div class="col-lg-4 col-md-6 test-<%=i%>">
 						<div class="box_list home">
-							<!-- <form method="post" action="/bookmarks">
-								<input class="form-control" type="hidden" name="doctor_id" value="<%= doctors[i]._id%>">
-								<a href="#0" data-toggle="tooltip" data-placement="top" title="Add to wishlist" class="wish_bt"><button type="submit"></button></a>
-							</form> -->
-							<% if(user.bookmark.length>0) {%>
-								<% for(var z=0; z<user.bookmark.length; z++) {%>
-										<!-- <h1><%= bookmarks.length%></h1> -->
-										<%var bi = "'"+doctors[i]._id+"'"%>
-										<%var bd = "'"+user.bookmark[z].doctor+"'"%>
-										<% if(bi === bd){%>
-											<a href="#0" data-toggle="tooltip" data-placement="top" title="Add to wishlist" class="wish_bt bookmarked" ></a>
-											<% } else { %>
-												<a href="#0" data-toggle="tooltip" data-placement="top" title="Add to wishlist" class="wish_bt bookmark-add"><input type="hidden" class="doctor_id" name="doctor_id" value="<%= doctors[i]._id%>"></a>
-												<%}%>								<%}%>
-								
-								<% } else { %>
-									<a href="#0" data-toggle="tooltip" data-placement="top" title="Add to wishlist" class="wish_bt bookmark-add"><input type="hidden" class="doctor_id" name="doctor_id" value="<%= doctors[i]._id%>"></a>
-									<%}%>
-
+							<a href="#0" data-toggle="tooltip" data-placement="top" title="Add to wishlist" class="wish_bt bookmark-add"><input type="hidden" class="doctor_id" name="doctor_id" value="<%= doctors[i]._id%>"></a>
 							<figure>
-
 								<a href="detail-page.html"><img src="http://via.placeholder.com/565x565.jpg" class="img-fluid" alt=""></a>
 								<div class="preview"><span>Read more</span></div>
 							</figure>
@@ -58,3 +39,32 @@
 			</div>
 			<!-- /container -->
 		</div>
+		<script>
+			var doctor = <%-JSON.stringify(doctors)%>;
+	var bookmark = <%-JSON.stringify(user.bookmark)%>;
+	var x;
+
+	for(var i=0; i<doctor.length; i++){
+		if(bookmark.length>0){
+			for(var j=0; j<bookmark.length;j++){
+				if(doctor[i]._id === bookmark[j].doctor){
+					$(".test-"+i+" .home a.wish_bt").addClass("bookmarked").removeClass("bookmark-add").empty().attr('title','Bookmarked');
+					console.log(i)
+				}
+			}
+		}
+	};
+	if ("geolocation" in navigator) {
+		navigator.geolocation.getCurrentPosition(
+			function success(position)	{
+				console.log(position.coords.latitude+"-"+position.coords.longitude)
+			},
+			function error(error_message){
+				console.log("error-"+error_message)
+			}
+		)
+	} else {
+		console.log('geolocation is not enabled on this browser')
+	}
+
+</script>

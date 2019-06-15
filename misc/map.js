@@ -1,5 +1,50 @@
 
 $(document).ready(function () {
+    var ipApiResponse;
+    var doctor = <%- JSON.stringify(doctors) %>;
+    var bookmark = <%- JSON.stringify(user.bookmark) %>;
+
+    for (var i = 0; i < doctor.length; i++) {
+        if (bookmark.length > 0) {
+            for (var j = 0; j < bookmark.length; j++) {
+                if (doctor[i]._id === bookmark[j].doctor) {
+                    $(".test-" + i + " a.wish_bt").addClass("bookmarked").removeClass("bookmark-add").empty().attr('title', 'Bookmarked');
+                    console.log(i)
+                }
+            }
+        }
+        markersData = {
+		'Doctors': [
+			{
+				name: doctor[i].profile.name,
+				location_latitude: 48.873792,
+				location_longitude: 2.295028,
+				map_image_url: '/img/doctor_listing_1.jpg',
+				type: 'Psicologist - Pediatrician',
+				url_detail: 'detail-page.html',
+				name_point: doctor[i].profile.name,
+				description_point: '35 Newtownards Road, Belfast, BT4.',
+				get_directions_start_address: '',
+				phone: '+3934245255'
+			},
+			]
+
+	};
+    };
+	$.ajax({
+		method: 'GET',
+		url: 'http://ip-api.com/json',
+		dataType: 'json',
+		async: false,
+		success: function (json) {
+			ipApiResponse = json;
+			// callback(test)
+		},
+		error: function (err) {
+			console.log(err);
+		}
+	});
+	console.log(ipApiResponse.lat, ipApiResponse.lon);
 	(function (A) {
 	if (!Array.prototype.forEach)
 		A.forEach = A.forEach || function (action, that) {
@@ -12,64 +57,11 @@ $(document).ready(function () {
 
 var
 	mapObject,
-	markers = [],
-	markersData = {
-		'Doctors': [
-			{
-				name: 'Dr. Jhoanna Steel',
-				location_latitude: 48.873792,
-				location_longitude: 2.295028,
-				map_image_url: '/img/doctor_listing_1.jpg',
-				type: 'Psicologist - Pediatrician',
-				url_detail: 'detail-page.html',
-				name_point: 'Dr. Jhoanna Steel',
-				description_point: '35 Newtownards Road, Belfast, BT4.',
-				get_directions_start_address: '',
-				phone: '+3934245255'
-			},
-			{
-				name: 'Dr. Robert Carl',
-				location_latitude: 48.800040,
-				location_longitude: 2.139670,
-				map_image_url: '/img/doctor_listing_1.jpg',
-				type: 'Psicologist',
-				url_detail: 'detail-page.html',
-				name_point: 'Dr. Robert Carl',
-				description_point: '35 Newtownards Road, Belfast, BT4.',
-				get_directions_start_address: '',
-				phone: '+3934245255'
-			},
-			{
-				name: 'Dr. Mark Twain',
-				location_latitude: 48.846222,
-				location_longitude: 2.346414,
-				map_image_url: '/img/doctor_listing_1.jpg',
-				type: 'Primary Care',
-				url_detail: 'detail-page.html',
-				name_point: 'Dr. Mark Twain',
-				description_point: '35 Newtownards Road, Belfast, BT4.',
-				get_directions_start_address: '',
-				phone: '+3934245255'
-			},
-			{
-				name: 'Dr.Suraj',
-				location_latitude: 48.846222,
-				location_longitude: 2.246414,
-				map_image_url: '/img/doctor_listing_1.jpg',
-				type: 'Primary Care',
-				url_detail: 'detail-page.html',
-				name_point: 'Dr. Mark Twain',
-				description_point: '35 Newtownards Road, Belfast, BT4.',
-				get_directions_start_address: '',
-				phone: '+3934245255'
-			}
-		]
-
-	};
+	markers = [];
 
 var mapOptions = {
 	zoom: 10,
-	center: new google.maps.LatLng(48.873792, 2.295028),
+	center: new google.maps.LatLng(ipApiResponse.lat, ipApiResponse.lon),
 	mapTypeId: google.maps.MapTypeId.ROADMAP,
 
 	mapTypeControl: false,

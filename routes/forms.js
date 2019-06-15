@@ -71,12 +71,16 @@ router.get('/user/verify/:token', function(req,res,next){
     });
 });
 router.get('/user/login', function(req,res,next){
-  res.render('main/login', {
-    title:'user-login'
-  })
+  if (req.user) {
+    res.redirect('back')
+  } else {
+    res.render('main/login', {
+      title:'user-login'
+    })
+  }
 })
 router.post("/user/login", passport.authenticate('user-local', {
-successRedirect: '/profile',
+successRedirect: '/panel',
 failureRedirect: '/user/login',
 failureFlash: true,
 }));
@@ -149,67 +153,7 @@ failureFlash: true
 
 }));
 
-router.get("/profile",passportConf.isAuthenticated, function(req, res, next){
-  var userPrototype =  Object.getPrototypeOf(req.user);
-  if (userPrototype === Doctor.prototype) {
-    res.render('panel-body/profile', {
-      title: 'profile',
-      userType: 'doctor',
-      user: req.user
-    });
-  } else if (userPrototype === User.prototype) {
-    res.render('panel-body/profile', {
-      title: 'profile',
-      userType: 'user',
-      user: req.user
-    });
-  }
-});
-router.post('/profile', function(req,res,next){
-  // if (req.body.title[0] != '') {
-  //   console.log(req.body.title)
-  // } else {
-  //   console.log(req.body);
-  // }
-  var userPrototype =  Object.getPrototypeOf(req.user);
-  if (userPrototype === Doctor.prototype){
-    Doctor.findById(req.user._id, function(err,user){
-      if(req.body.telephone) user.telephone = req.body.telephone;
-      if(req.body.ps) user.curriculm.professionalstatement = req.body.ps; 
-      if(req.body.specialization){
-        var specialization = req.body.specialization;
-        var spec = specialization.split(',');
-        for (var i=0; i<spec.length; i++){
-          // console.log(spec[i]);
-          user.curriculm.specialization.push({
-            category: spec[i]
-          })
-          };
-        }
-        if(req.body.title[0] != ''){
-          for (i=0; i < req.body.title.length; i++){
-              // console.log(req.body.title[i]+'-'+req.body.price[i])
-              user.pricing.push({
-                  title: req.body.title[i],
-                  price: req.body.price[i]
-              })
-          }
-      }
-      user.save(function(err){
-        if(err) return next(err);
-        return res.redirect('/profile');
-      });
-    })
-  } else if (userPrototype === User.prototype){
-    user.findById(req.user._id, function(err,user){
-      if(req.body.telephone) user.telephone = req.body.telephone;
-      user.save(function(err){
-        if(err) return next(err);
-        return res.redirect('/profile');
-      });
-    })
-  }
-})
+
 router.get("/logout", function(req, res , _next){
   req.logOut();
   res.redirect("/");

@@ -68,15 +68,16 @@
 				<div class="col-xl-9 col-lg-8">
 					
 					<div class="box_general_2 add_bottom_45">
-						<div class="main_title_4">
+						<form method="POST">
+													<div class="main_title_4">
 							<h3><i class="icon_circle-slelected"></i>Select your date and time</h3>
 						</div>
 						
 						<div class="row add_bottom_45">
 							<div class="col-lg-7">
 								<div class="form-group">
-									<div id="calendar"></div>
-									<input type="hidden" id="my_hidden_input">
+									<div id="calendar" data-date="12/03/2012"></div>
+									<input type="hidden" name="calendar" id="my_hidden_input">
 									<ul class="legend">
 										<li><strong></strong>Available</li>
 										<li><strong></strong>Selected</li>
@@ -154,7 +155,12 @@
                             <%}%>
 						</ul>
 						<hr>
-						<div class="text-center"><a href="booking-page.html" class="btn_1 medium">Book Now</a></div>
+						<div class="text-center">
+							<button type="submit" class="btn_1 medium">
+								Book Now
+							</button>
+						</div>
+						</form>
 					</div>
 					<!-- /box_general -->
 					
@@ -463,8 +469,7 @@
 	<!-- SPECIFIC SCRIPTS -->
     <script src="/js/bootstrap-datepicker.js"></script>
     <script>
-		var dateToday = new Date();
-		var enddate = dateToday.setDate(dateToday.getDate()+1);
+
 			$('#calendar').datepicker({
 			    todayHighlight: true,
 				daysOfWeekDisabled: [0],
@@ -472,8 +477,13 @@
 			    format: "yyyy-mm-dd",
 				datesDisabled: ["2017/10/20", "2017/11/21","2017/12/21", "2018/01/21","2018/02/21","2018/03/21"],
 				startDate: new Date(),
-				endDate: '+4d',
+				endDate: '+3d',
 
+			});
+			$('#calendar').on('changeDate', function() {
+		    	$('#my_hidden_input').val(
+        			$('#calendar').datepicker('getFormattedDate')
+    			);
 			});
 	</script>
      

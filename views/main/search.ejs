@@ -1,0 +1,105 @@
+<% layout('layout') -%>
+<style>
+
+.result-bucket li {
+    padding: 7px 15px;
+}
+.instant-results {
+    background: #fff;
+    width: 100%;
+    color: gray;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    border: 1px solid rgba(0, 0, 0, .15);
+    border-radius: 4px;
+    -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, .175);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .175);
+    display: none;
+    z-index: 9;
+}
+.result-link {
+    color: #4f7593;
+}
+.result-link .media-body {
+    font-size: 13px;
+    color: gray;
+}
+.result-link .media-heading {
+    font-size: 15px;
+    font-weight: 400;
+    color: #4f7593;
+}
+.result-link:hover,
+.result-link:hover .media-heading,
+.result-link:hover .media-body {
+    text-decoration: none;
+    color: #4f7593
+}
+.result-link .media-object {
+    width: 50px;
+    padding: 3px;
+    border: 1px solid #c1c1c1;
+    border-radius: 3px;
+}
+.result-entry + .result-entry {
+    border-top:1px solid #ddd;
+}
+.result-bucket li{
+  display: block !important;
+}
+</style>
+<main>
+  <div class="hero_home version_1">
+    <div class="content">
+      <h3>Find a Doctor!</h3>
+      <p>
+        Ridiculus sociosqu cursus neque cursus curae ante scelerisque vehicula.
+      </p>
+        <div id="custom-search-input">
+          <div class="input-group">
+            <input type="text" class=" search-query" id="search" placeholder="Ex. Name, Specialization ...." autocomplete="off">
+            <!-- <input type="submit" class="btn_search" value="Search"> -->
+            <p class="clear top-keyword" style="font-size: 18px;margin-top: 10px;"><span class="hidden-xs">Top Keywords:</span>
+              <a href="#" title="Google">Google</a>,
+              <a href="#" title="Bootstrap 3">Bootstrap 3</a>,
+              <a href="#" title="Bootsnipp">Bootsnipp</a>,
+              <a href="#" title="Search">Search</a>,
+              <a href="#" title="Suggestion">Suggestion</a>
+          </p>
+              <div class="test">
+                  <div class="instant-results">
+                      <ul class="list-unstyled result-bucket" id="search-results">                          
+                      </ul>
+                  </div>
+              </div>
+          </div>
+
+          <!-- <ul>
+            <li>
+              <input type="radio" id="all" name="radio_search" value="all" checked>
+              <label for="all">All</label>
+            </li>
+            <li>
+              <input type="radio" id="doctor" name="radio_search" value="doctor">
+              <label for="doctor">Doctor</label>
+            </li>
+            <li>
+              <input type="radio" id="clinic" name="radio_search" value="clinic">
+              <label for="clinic">Clinic</label>
+            </li>
+          </ul> -->
+        </div>
+    </div>
+  </div>
+</main>
+<script>
+    $('#search').keyup(function (event) {
+            $(".instant-results").fadeIn('slow').css({'height': '200px','overflow-y': 'scroll' });
+            event.stopPropagation();
+        });
+    
+        $('body').click(function () {
+            $(".instant-results").fadeOut('500');
+      });
+      </script>
