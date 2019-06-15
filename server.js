@@ -58,7 +58,7 @@ app.use(function(req, res, next){
     });
   });
 app.get('/', function(req, res){
-    res.send('<a href="/user/register">/user/register</a><br><a href="/user/login">/user/login</a><br><a href="/doctor/register">/doctor/register</a><br><a href="/doctor/login">/doctor/login</a><br><a href="/home">/dashboard</a><br><a href="/booking">/booking</a><br><a href="/category">/category</a><br><a href="/ajax/api">/ajax/api</a><br>')
+    res.send('<a href="/user/register">/user/register</a><br><a href="/user/login">/user/login</a><br><a href="/doctor/register">/doctor/register</a><br><a href="/doctor/login">/doctor/login</a><br><a href="/home">/dashboard</a><br><a href="/booking">/booking</a><br><a href="/category">/category</a><br><a href="/search">/search</a><br>')
 });
 
 var apiRouter = require('./api/mail');
